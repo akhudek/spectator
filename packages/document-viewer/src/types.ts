@@ -37,9 +37,20 @@ export type Selection = {
 
 export type PageSelection = { indexStart: number; indexEnd: number } | null;
 
+export interface ImageURLCallback {
+  (): Promise<string>
+}
+
+export interface TokensCallback {
+  (): Promise<Token[]>
+}
+
+export type ImageURL = string | ImageURLCallback;
+export type TokensURL = string | TokensCallback;
+
 export type Page = {
   originalHeight: number;
   originalWidth: number;
-  imageURL: string;
-  tokensURL: string;
+  imageURL: ImageURL;
+  tokensURL: TokensURL;
 };

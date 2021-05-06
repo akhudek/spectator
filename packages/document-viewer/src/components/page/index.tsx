@@ -1,6 +1,13 @@
 import React from "react";
 
-import { IndexedAnnotation, MouseSelection, PageSelection, Selection } from "../../types";
+import {
+  IndexedAnnotation,
+  MouseSelection,
+  PageSelection,
+  Selection,
+  ImageURL,
+  TokensURL,
+} from "../../types";
 
 import Viewbox from "./viewbox";
 
@@ -17,7 +24,7 @@ type PageProps = {
   annotations: IndexedAnnotation[];
   focusedAnnotationIndex: number;
   focusingAnnotation: boolean;
-  imageURL: string;
+  imageURL: ImageURL;
   load: boolean;
   onAnnotationDelete: (annotation: IndexedAnnotation) => void;
   onFocusedAnnotationIndexChange: (annotationIndex: number) => void;
@@ -29,7 +36,7 @@ type PageProps = {
   pageNumber: number;
   mouseSelection: MouseSelection;
   selection: PageSelection;
-  tokensURL: string;
+  tokensURL: TokensURL;
   zoom: number;
 };
 

@@ -5,12 +5,16 @@ import { topicToColor } from "../ui/annotationcolors/index";
 
 import {
   BoundingBox,
+  ImageURL,
+  ImageURLCallback,
   IndexedAnnotation,
   MousePosition,
   MouseSelection,
   PageSelection,
   Selection,
   Token,
+  TokensURL,
+  TokensCallback,
 } from "../../types";
 
 import "./style.css";
@@ -225,7 +229,7 @@ type ViewboxrProps = {
   annotations: IndexedAnnotation[];
   focusedAnnotationIndex: number;
   focusingAnnotation: boolean;
-  imageURL: string;
+  imageURL: ImageURL;
   onAnnotationFocus: (annotationIndex: number) => void;
   onSelectionStart: (selection: Selection) => void;
   onSelectionEnd: (selection: Selection) => void;
@@ -234,7 +238,7 @@ type ViewboxrProps = {
   pageNumber: number;
   mouseSelection: MouseSelection;
   selection: PageSelection;
-  tokensURL: string;
+  tokensURL: TokensURL;
 };
 
 const Viewbox = (props: ViewboxrProps) => {
@@ -257,6 +261,7 @@ const Viewbox = (props: ViewboxrProps) => {
   const pageImageWrapperRef = React.useRef<HTMLDivElement>(null);
 
   const [tokens, setTokens] = React.useState<Token[] | null>(null);
+  const [imageSrc, setImageSrc] = React.useState<string | null>(null);
   const [rtree, setRtree] = React.useState<Flatbush | null>(null);
 
   const annotationRectangles = React.useMemo(() => annotationsToRectangles(annotations, tokens), [
@@ -278,14 +283,20 @@ const Viewbox = (props: ViewboxrProps) => {
       // The tokens are meant to be immutable, so let's always
       // use the cache if it's there
       try {
-        const res = await fetch(tokensURL, {
-          cache: "force-cache",
-          signal: abortController.signal,
-        });
-        res
-          .json()
-          .then(res => setTokens(res))
-          .catch(err => console.error("Error fetching the tokens", err));
+        if (tokensURL instanceof String) {
+          const res = await fetch(tokensURL as string, {
+            cache: "force-cache",
+            signal: abortController.signal,
+          });
+          res
+            .json()
+            .then((res) => setTokens(res))
+            .catch((err) => console.error("Error fetching the tokens", err));
+        } else {
+          (tokensURL as TokensCallback)()
+            .then((res) => setTokens(res))
+            .catch((err) => console.error("Error fetching the tokens", err));
+        }
       } catch (err) {
         if (err.name !== "AbortError") {
           console.error("Error fetching the tokens", err);
@@ -299,6 +310,16 @@ const Viewbox = (props: ViewboxrProps) => {
 
     return () => abortController.abort();
   }, [abortController, tokens, tokensURL]);
+
+  React.useEffect(() => {
+    if (imageURL instanceof String) {
+      setImageSrc(imageURL as string);
+    } else {
+      (imageURL as ImageURLCallback)()
+        .then((res) => setImageSrc(res))
+        .catch((err) => console.error("Error fetching the image url", err));
+    }
+  }, [imageSrc, imageURL]);
 
   React.useEffect(() => {
     if (!tokens) return;
@@ -420,8 +441,8 @@ const Viewbox = (props: ViewboxrProps) => {
 
   return (
     <div className={"Page__Image-Wrapper"} ref={pageImageWrapperRef}>
-      {imageURL && (
-        <img className={"Page__Image"} src={imageURL} alt={"Image of page " + pageNumber} />
+      {imageSrc && (
+        <img className={"Page__Image"} src={imageSrc} alt={"Image of page " + pageNumber} />
       )}
 
       {tokens && (
