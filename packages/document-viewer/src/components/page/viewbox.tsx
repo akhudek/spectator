@@ -290,12 +290,12 @@ const Viewbox = (props: ViewboxrProps) => {
           });
           res
             .json()
-            .then((res) => setTokens(res))
-            .catch((err) => console.error("Error fetching the tokens", err));
+            .then(res => setTokens(res))
+            .catch(err => console.error("Error fetching the tokens", err));
         } else {
           (tokensURL as TokensCallback)()
-            .then((res) => setTokens(res))
-            .catch((err) => console.error("Error fetching the tokens", err));
+            .then(res => setTokens(res))
+            .catch(err => console.error("Error fetching the tokens", err));
         }
       } catch (err) {
         if (err.name !== "AbortError") {
@@ -316,8 +316,8 @@ const Viewbox = (props: ViewboxrProps) => {
       setImageSrc(imageURL as string);
     } else {
       (imageURL as ImageURLCallback)()
-        .then((res) => setImageSrc(res))
-        .catch((err) => console.error("Error fetching the image url", err));
+        .then(res => setImageSrc(res))
+        .catch(err => console.error("Error fetching the image url", err));
     }
   }, [imageSrc, imageURL]);
 

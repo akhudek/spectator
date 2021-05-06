@@ -38,11 +38,11 @@ export type Selection = {
 export type PageSelection = { indexStart: number; indexEnd: number } | null;
 
 export interface ImageURLCallback {
-  (): Promise<string>
+  (): Promise<string>;
 }
 
 export interface TokensCallback {
-  (): Promise<Token[]>
+  (): Promise<Token[]>;
 }
 
 export type ImageURL = string | ImageURLCallback;
